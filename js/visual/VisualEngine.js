@@ -208,9 +208,10 @@ class VisualEngine {
     }
 
     mousePressed(p) {
-        // Simple Interaction: Toggle Zoom or Reset
-        // Raycasting for point cloud is expensive to do on CPU for 3000 points in JS without acceleration.
-        // For now, let's just allow zoom control via mouseDrag (OrbitControl handles this).
+        // Interaction: Trigger selection logic in main.js
+        if (this.onSatelliteClick) {
+            this.onSatelliteClick(p.mouseX, p.mouseY);
+        }
     }
 
     windowResized(p) {

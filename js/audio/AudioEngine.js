@@ -21,9 +21,9 @@ class AudioEngine {
 
         // Active sounds tracking - PERFORMANCE FIX
         this.lastTriggerTime = new Map();
-        this.minTriggerInterval = 800; // SLOWER (Deep Space)
+        this.minTriggerInterval = 1200; // SLOWER (Deep Space, User Request -20%)
         this.globalLastTrigger = 0;
-        this.globalTriggerInterval = 400; // SPARSE (Less chaotic)
+        this.globalTriggerInterval = 600; // SPARSE
 
         // Sound explanation callback
         this.onSoundPlayed = null;

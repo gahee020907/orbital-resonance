@@ -103,13 +103,26 @@ class Instruments {
         };
 
         // PRESET 2: REALISM (Telemetry)
-        const telem1 = new Tone.PolySynth(Tone.FMSynth, {
-            harmonicity: 0.5, modulationIndex: 2, oscillator: { type: "square" }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.2 }, volume: -6
+        // PRESET 2: REALISM (Telemetry - Refined)
+        // User Feedback: "Low notes too electronic/ugly". Switching to soft Sine/Triangle.
+        const telem1 = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "sine" }, // Pure tone, no harsh square
+            envelope: { attack: 0.05, decay: 0.3, sustain: 0.2, release: 1.5 }, // Longer release for "pretty" feel
+            volume: -8
         }).connect(this.masterOut);
+
         const telem2 = new Tone.PolySynth(Tone.FMSynth, {
-            harmonicity: 10, modulationIndex: 10, oscillator: { type: "sine" }, envelope: { attack: 0.001, decay: 0.05 }, volume: -10
+            harmonicity: 3, // Reduced from 10 (less metallic)
+            modulationIndex: 5,
+            oscillator: { type: "sine" },
+            envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 1 },
+            volume: -12
         }).connect(this.masterOut);
-        const staticNoise = new Tone.NoiseSynth({ volume: -12 }).connect(this.masterOut);
+
+        const staticNoise = new Tone.NoiseSynth({
+            envelope: { attack: 0.01, decay: 0.1, sustain: 0 },
+            volume: -18 // Quieter
+        }).connect(this.masterOut);
 
         this.presets.realism = {
             STATION: telem1,
