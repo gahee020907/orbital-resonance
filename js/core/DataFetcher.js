@@ -29,7 +29,12 @@ class DataFetcher {
       const url = `${this.baseUrl}?GROUP=${group}&FORMAT=tle`;
       console.log(`🛰️ Fetching TLE data: ${group}`);
 
-      const response = await fetch(url);
+      // Robustness: 5s Timeout for Network Fetch
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      const response = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -47,7 +52,8 @@ class DataFetcher {
       return satellites;
 
     } catch (error) {
-      console.error(`❌ Error fetching ${group}:`, error);
+      console.warn(`⚠️ Network/Timeout for ${group}:`, error);
+      console.log(`🔄 Switching to FALLBACK DATA for ${group}`);
       return this.getFallbackData(group);
     }
   }
