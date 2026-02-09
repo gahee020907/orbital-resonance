@@ -325,7 +325,7 @@ class VisualEngine {
         // p.camera() ...?
 
         // Let's try the p5 generic solution:
-        const uMV = renderer.uModelViewMatrix.copy();
+        const uMV = renderer.uMVMatrix.copy();
         const uP = renderer.uPMatrix.copy();
 
         // Multiply: P * MV * v
