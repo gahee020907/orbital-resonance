@@ -85,10 +85,26 @@ class OrbitalResonanceApp {
         const zoom = this.visualEngine.zoom;
 
         for (const sat of satellites) {
-            const vis = this.visualEngine.parameterMapper.mapToVisual(sat);
-            const pos = this.visualEngine.orbitalMechanics.eciToScreen(vis.eciPosition, width, height, 0, zoom);
+            // FIX: Use exact visual position from VisualEngine
+            // This ensures we click exactly what we see (3D -> 2D projection)
+            const worldPos = this.visualEngine.getSatelliteWorldPosition(sat);
+            if (!worldPos) continue;
 
-            const d = Math.sqrt((mx - pos.x) ** 2 + (my - pos.y) ** 2);
+            // Use our custom Polyfill since p.screenPosition is missing
+            const screenPos = this.visualEngine.getScreenPosition(worldPos.x, worldPos.y, worldPos.z);
+            if (!screenPos) continue;
+
+            // Screen Coordinates from VisualEngine are already p5-centered (-w/2 ... w/2)
+            // But mouseX/Y (mx, my) provided by p5 events are usually 0..width?
+            // Wait, VisualEngine.js onSatelliteClick(p.mouseX, p.mouseY).
+            // p.mouseX in WEBGL is relative to canvas top-left (0..width).
+            // VisualEngine.getScreenPosition returns centered (-width/2..width/2).
+            // So we need to shift screenPos to match mouseX.
+
+            const sx = screenPos.x + width / 2;
+            const sy = screenPos.y + height / 2;
+
+            const d = Math.sqrt((mx - sx) ** 2 + (my - sy) ** 2);
             if (d < minDist) {
                 minDist = d;
                 closest = sat;

@@ -126,17 +126,29 @@ class Dashboard {
 
     // Satellite Info
     updateSatelliteInfo(sat) {
-        const panel = document.getElementById('info-panel');
+        if (!this.infoPanel) return; // Ensure infoPanel is initialized
+
         if (!sat) {
-            panel?.classList.add('hidden');
+            this.infoPanel.classList.add('hidden');
             return;
         }
 
-        panel?.classList.remove('hidden');
+        // Safety check for position
+        if (!sat.position) {
+            document.getElementById('info-altitude').textContent = "CALCULATING...";
+            document.getElementById('info-velocity').textContent = "---";
+            document.getElementById('info-instrument').textContent = sat.category || 'UNKNOWN';
+            document.getElementById('selected-satellite-name').textContent = sat.name;
+            this.infoPanel.classList.remove('hidden');
+            return;
+        }
+
         document.getElementById('selected-satellite-name').textContent = sat.name;
-        document.getElementById('info-altitude').textContent = `${sat.position.altitude.toFixed(0)} KM`;
-        document.getElementById('info-velocity').textContent = `${sat.position.velocity.toFixed(2)} KM/S`;
+        document.getElementById('info-altitude').textContent = sat.position.altitude.toFixed(2) + ' KM';
+        document.getElementById('info-velocity').textContent = sat.position.velocity.toFixed(2) + ' KM/S';
         document.getElementById('info-instrument').textContent = sat.category;
+
+        this.infoPanel.classList.remove('hidden');
 
         // Add description (dynamic based on type)
         let desc = "";
