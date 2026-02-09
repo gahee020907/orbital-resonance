@@ -97,220 +97,129 @@ class VisualEngine {
         this.earthRenderer.render(p, 0, 0, earthR);
 
         // 3. Satellites & Trails
-        const activeSats = [];
+        // Batch Rendering Groups
+        const batches = {
+            STATION: [],
+            NAVIGATION: [],
+            SCIENCE: [],
+            WEATHER: [],
+            COMMUNICATION: [],
+            DEBRIS: [],
+            OTHER: []
+        };
 
         // Pre-calc positions (3D)
         for (const sat of this.cachedSatellites) {
             if (!sat.position) continue;
 
-            // Convert to 3D Scene Coordinates
-            // sat.position.altitude + Earth Radius
-            // We use OrbitalMechanics or just simple spherical conversion here for visualization
             const r = (6371 + sat.position.altitude) * (earthR / 6371);
             const theta = (90 - sat.position.latitude) * (Math.PI / 180);
-            const phi = (sat.position.longitude + 180) * (Math.PI / 180); // Adjust to match texture if needed
+            const phi = (sat.position.longitude + 180) * (Math.PI / 180);
 
             const x = -(r * Math.sin(theta) * Math.cos(phi));
             const z = (r * Math.sin(theta) * Math.sin(phi));
-            const y = -(r * Math.cos(theta)); // p5 Y is down? p5 3D Y is Down. 
+            const y = -(r * Math.cos(theta));
 
-            // Correction for p5 coordinates
-            // In p5 WEBGL: X right, Y down, Z towards viewer (but we can rotate)
+            const pos = { x, y, z, sat };
 
-            const pos = { x, y, z };
+            // Categorize
+            let cat = sat.category;
+            if (!batches[cat]) cat = 'OTHER';
+            batches[cat].push(pos);
 
-            // Update Trail
-            if (this.trailEffect) {
-                this.trailEffect.update(sat.noradId || sat.name, pos);
-            }
-            activeSats.push({ pos, sat });
-        }
-
-        // Draw Trails First
-        if (this.trailEffect) {
-            for (const s of activeSats) {
-                const velocity = s.sat.position?.velocity || 7;
-                const normVel = Math.min(Math.max((velocity - 0) / 8, 0), 1);
-
-                const r = p.lerp(255, 0, normVel);
-                const g = p.lerp(255, 200, normVel);
-                const b = 255;
-
-                this.trailEffect.draw(p, s.sat.noradId || s.sat.name, { r, g, b }, 0.2);
+            // Check selection or high-velocity highlight
+            if (this.selectedSat && this.selectedSat === sat) {
+                // Draw selected immediately/later
             }
         }
 
-        // Draw Satellites
-        for (const s of activeSats) {
-            const { x, y, z } = s.pos;
+        // DRAW BATCHES (Points)
+        p.strokeWeight(2);
 
-            const velocity = s.sat.position?.velocity || 3;
-            const t = p.constrain(p.map(velocity, 3, 7.5, 0, 1), 0, 1);
+        // STATION (White)
+        if (batches.STATION.length > 0) {
+            p.stroke(255);
+            p.beginShape(p.POINTS);
+            for (const s of batches.STATION) p.vertex(s.x, s.y, s.z);
+            p.endShape();
+        }
 
-            let r = 255, g = 255, b = 255;
-            if (t > 0.8) { r = 200; g = 255; b = 255; }
-            else { r = 200; g = 200; b = 255; }
+        // NAVIGATION (Gold)
+        if (batches.NAVIGATION.length > 0) {
+            p.stroke(255, 200, 50);
+            p.beginShape(p.POINTS);
+            for (const s of batches.NAVIGATION) p.vertex(s.x, s.y, s.z);
+            p.endShape();
+        }
 
-            p.push();
-            p.translate(x, y, z);
+        // SCIENCE (Magenta)
+        if (batches.SCIENCE.length > 0) {
+            p.stroke(255, 100, 255);
+            p.beginShape(p.POINTS);
+            for (const s of batches.SCIENCE) p.vertex(s.x, s.y, s.z);
+            p.endShape();
+        }
 
-            // CATEGORY-BASED VISUALS (User Request)
-            const cat = s.sat.category;
+        // WEATHER (Green)
+        if (batches.WEATHER.length > 0) {
+            p.stroke(100, 255, 150);
+            p.beginShape(p.POINTS);
+            for (const s of batches.WEATHER) p.vertex(s.x, s.y, s.z);
+            p.endShape();
+        }
 
-            if (cat === 'STATION') {
-                // STATION: White Cube (Large, Man-made)
-                p.noStroke();
-                // Pulse size
-                const pulse = Math.sin(p.millis() * 0.002) * 2;
-                p.fill(255);
-                p.emissiveMaterial(255, 255, 255); // Glow
-                p.box(6 + pulse);
+        // COMMUNICATION (Cyan)
+        if (batches.COMMUNICATION.length > 0) {
+            p.stroke(100, 200, 255);
+            p.beginShape(p.POINTS);
+            for (const s of batches.COMMUNICATION) p.vertex(s.x, s.y, s.z);
+            p.endShape();
+        }
 
-                // Crosshair rings?
-                p.noFill();
-                p.stroke(255, 50);
-                p.strokeWeight(1);
-                p.box(15);
-            }
-            else if (cat === 'NAVIGATION') {
-                // NAVIGATION: Gold Tetrahedron (Precision)
-                p.noStroke();
-                p.fill(255, 200, 50); // Gold
-                p.emissiveMaterial(200, 150, 0);
+        // DEBRIS (Red/Grey)
+        if (batches.DEBRIS.length > 0) {
+            p.stroke(150, 50, 50); // Dim Red
+            p.beginShape(p.POINTS);
+            for (const s of batches.DEBRIS) p.vertex(s.x, s.y, s.z);
+            p.endShape();
+        }
+
+        // Highlighting Selected
+        // Highlighting Selected
+        if (this.selectedSat) {
+            // Simple highlight for selection
+            const sat = this.selectedSat;
+            if (sat.position) {
+                const r = (6371 + sat.position.altitude) * (earthR / 6371);
+                const theta = (90 - sat.position.latitude) * (Math.PI / 180);
+                const phi = (sat.position.longitude + 180) * (Math.PI / 180);
+                const x = -(r * Math.sin(theta) * Math.cos(phi));
+                const z = (r * Math.sin(theta) * Math.sin(phi));
+                const y = -(r * Math.cos(theta));
+
                 p.push();
-                p.rotateX(p.millis() * 0.001);
-                p.rotateY(p.millis() * 0.001);
-                p.cone(3, 6); // Triangle-ish
+                p.translate(x, y, z);
+                p.stroke(255, 255, 0);
+                p.noFill();
+                p.box(10);
                 p.pop();
             }
-            else if (cat === 'SCIENCE') {
-                // SCIENCE: Magenta Sphere (Research, Perfect)
-                p.noStroke();
-                p.fill(255, 100, 255); // Magenta
-                p.emissiveMaterial(200, 50, 200);
-                p.sphere(3);
-                // Orbit ring
-                p.noFill();
-                p.stroke(255, 100, 255, 100);
-                p.ellipse(0, 0, 10, 10);
-            }
-            else if (cat === 'WEATHER') {
-                // WEATHER: Green Box (Scanner)
-                p.noStroke();
-                p.fill(100, 255, 150);
-                p.box(3);
-            }
-            else if (cat === 'DEBRIS') {
-                // DEBRIS: Red Jagged Point (Trash)
-                p.stroke(255, 50, 50);
-                p.strokeWeight(2);
-                p.point(0, 0, 0);
-            }
-            else {
-                // COMMUNICATION / DEFAULT: Cyan Swarm (Points for Performance)
-                // Thousands of these, keep strictly generic points
-                p.stroke(100, 230, 255, t > 0.8 ? 255 : 200);
-                p.strokeWeight(t > 0.8 ? 2 : 1.5);
-                p.point(0, 0, 0);
-            }
-
-            p.pop();
         }
-
-        // Interaction? Raycasting is hard in p5 WEBGL.
-        // We might disable click selection for now or implement simple distance check to camera ray.
     }
-
-    drawTargetLock(p, x, y, size, color, isActive) {
-        // Unused but kept for reference if needed later
-    }
-
-    drawEarth(p, cx, cy, earthR) {
-        // ETHEREAL SCALE - Reduced to 0.25 to de-cluster satellites
-        // const baseR = Math.min(p.width, p.height) * 0.25; // Removed, now using earthR directly
-        const r = earthR; // Use the passed earthR
-
-        // ATMOSPHERIC VOID
-        // No hard edges. Just a deep glow.
-        p.drawingContext.shadowBlur = 80;
-        p.drawingContext.shadowColor = 'rgba(50, 100, 255, 0.4)';
-
-        // 1. The Void (Black Hole style)
-        p.fill(0);
-        p.noStroke();
-        p.ellipse(cx, cy, r * 1.98);
-
-        // 2. Subtle Rim (Atmosphere)
-        p.noFill();
-        p.strokeWeight(1);
-        p.stroke(100, 150, 255, 30); // Very faint
-        p.ellipse(cx, cy, r * 2);
-
-        // 3. Inner Horizon Glow
-        // Simulate volumetric atmosphere with multiple faint rings
-        for (let i = 0; i < 5; i++) {
-            p.stroke(100, 150, 255, 10 - i * 2);
-            p.ellipse(cx, cy, r * (2 - i * 0.01));
-        }
-
-        p.drawingContext.shadowBlur = 0;
-    }
-
-    // Jewel-like Star Field Point Cloud
-    drawMinimalPoint(p, category, x, y, size) {
-        // Base Colors - SOFT PASTELS (lighter, less aggressive)
-        let c;
-        switch (category) {
-            case 'STATION': c = p.color(255, 255, 255); break; // White
-            case 'COMMUNICATION': c = p.color(100, 230, 255); break; // Soft Cyan
-            case 'NAVIGATION': c = p.color(255, 230, 100); break; // Soft Gold
-            case 'SCIENCE': c = p.color(255, 120, 220); break; // Soft Magenta
-            case 'WEATHER': c = p.color(100, 255, 150); break; // Soft Green
-            case 'DEBRIS': c = p.color(200, 100, 100); break; // Soft Red
-            default: c = p.color(220, 220, 255); // Pale Blue
-        }
-
-        // Apply Glow based on Importance
-        const time = p.millis() * 0.003;
-        const pulse = Math.abs(Math.sin(time)); // 0 to 1
-
-        if (category === 'STATION') {
-            const glowSize = 25 + pulse * 15; // 25-40
-            p.drawingContext.shadowBlur = glowSize;
-            p.drawingContext.shadowColor = c.toString();
-            p.fill(c); p.noStroke();
-            p.circle(x, y, 15);
-            // Crosshair for Station (Rotating slightly?)
-            p.stroke(c); p.strokeWeight(2);
-            p.line(x - 8, y, x + 8, y);
-            p.line(x, y - 8, x, y + 8);
-        } else if (category === 'DEBRIS') {
-            p.fill(c); p.noStroke();
-            p.drawingContext.shadowBlur = 0;
-            p.circle(x, y, 4);
-        } else {
-            // Standard Satellites - Gemstones (BREATHING PULSE)
-            const dynamicSize = 8 + (pulse * 3); // 8 to 11px
-            const dynamicGlow = 15 + (pulse * 10); // 15 to 25px
-
-            p.drawingContext.shadowBlur = dynamicGlow;
-            p.drawingContext.shadowColor = c.toString();
-            p.fill(c); p.noStroke();
-            p.circle(x, y, dynamicSize);
-        }
-
-        p.drawingContext.shadowBlur = 0; // Reset
-    }
-
 
     mousePressed(p) {
-        const cx = p.width / 2;
-        const cy = p.height / 2;
-        if (this.onSatelliteClick) this.onSatelliteClick(p.mouseX, p.mouseY);
+        // Simple Interaction: Toggle Zoom or Reset
+        // Raycasting for point cloud is expensive to do on CPU for 3000 points in JS without acceleration.
+        // For now, let's just allow zoom control via mouseDrag (OrbitControl handles this).
     }
 
-    windowResized(p) { p.resizeCanvas(window.innerWidth, window.innerHeight); }
-    setZoom(z) { this.zoom = z; }
+    windowResized(p) {
+        const container = document.getElementById('canvas-container');
+        if (container) {
+            p.resizeCanvas(container.clientWidth, container.clientHeight);
+        }
+    }
+
     getFPS() { return this.p5Instance ? Math.round(this.p5Instance.frameRate()) : 0; }
     dispose() { if (this.p5Instance) this.p5Instance.remove(); }
 }

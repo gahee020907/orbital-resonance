@@ -97,7 +97,9 @@ class AudioEngine {
             }
         }
 
-        this.spatialAudio.updateAllPositions(satellites);
+        // OPTIMIZATION: Spatial Audio is redundant as Instruments.js doesn't use the panners.
+        // Removing this loop saves massive CPU (3000+ panner updates per frame).
+        // this.spatialAudio.updateAllPositions(satellites);
 
         // Process a subset to avoid CPU overload?
         // No, process all but rely on probability gates in processSatellite
