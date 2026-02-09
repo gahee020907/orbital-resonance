@@ -1,0 +1,454 @@
+:root {
+  /* HOLOGRAPHIC HUD PALETTE */
+  --bg-color: #000000;
+  --text-primary: #ffffff;
+  --text-dim: rgba(255, 255, 255, 0.4);
+  --accent-color: #ffffff;
+  /* Monochrome purity */
+  --hud-font: 'Inter', sans-serif;
+  --mono-font: 'Menlo', 'Monaco', monospace;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  font-family: var(--hud-font);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+#canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* Header - TOP LEFT STATS */
+header {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  z-index: 100;
+  /* Ensure on top */
+  pointer-events: none;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  /* Readability */
+  opacity: 0;
+  /* Hidden initially */
+  transition: opacity 2s ease 1s;
+  /* Delayed fade in */
+}
+
+header.visible {
+  opacity: 1;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: 2rem;
+  letter-spacing: -1px;
+  margin: 0;
+  line-height: 0.9;
+}
+
+.subtitle {
+  font-family: var(--mono-font);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  margin-top: 8px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Header Controls */
+.header-controls {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  z-index: 200;
+}
+
+.icon-btn {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  /* Pill shape */
+  padding: 8px 20px;
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  /* Text size */
+  font-family: var(--mono-font);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  backdrop-filter: blur(5px);
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #fff;
+  color: #fff;
+}
+
+.icon-btn.active {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+}
+
+
+/* UI Hidden State */
+/* Only hide the Control Panel and Explanation, KEEP Header/Stats */
+body.ui-hidden #control-panel,
+body.ui-hidden #sound-explanation-panel {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(20px);
+  /* Slide down effect */
+}
+
+/* Stats */
+.stats-container {
+  display: flex;
+  gap: 20px;
+  font-family: var(--mono-font);
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.stat-item span {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* HUD Style: Ethereal Data Art */
+:root {
+  --bg-color: #000000;
+  --text-primary: #ffffff;
+  --text-dim: rgba(255, 255, 255, 0.5);
+  --hud-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono-font: "SF Mono", "Menlo", "Monaco", "Courier New", monospace;
+}
+
+/* Control Panel - Minimalist / Invisible */
+#control-panel {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: auto;
+  min-width: 180px;
+
+  /* Transparent - Floating Text */
+  background: transparent !important;
+  backdrop-filter: none !important;
+  border: none !important;
+
+  padding: 0;
+  text-align: right;
+  z-index: 100;
+
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 1s ease 1s;
+}
+
+#control-panel.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#control-panel h3 {
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+  color: var(--neon-cyan);
+  letter-spacing: 1px;
+}
+
+/* Hide controls by default for clean look */
+.panel-section {
+  display: none;
+}
+
+/* Only show Trigger Rules */
+.panel-section:nth-child(4) {
+  /* Assuming trigger rules is 4th */
+  display: block;
+}
+
+/* Actually let's just target the specific content if possible, or use JS to toggle. 
+   For now, strictly targeting the "TRIGGER RULES" section via specific class if it had one.
+   Let's just style general sections to be minimal list.
+*/
+.panel-section {
+  display: block;
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 15px;
+}
+
+.panel-section h3 {
+  display: none;
+  /* Hide headers */
+}
+
+.control-group label {
+  font-size: 0.65rem;
+}
+
+/* Specific overrides for cleaner HUD */
+#control-panel input,
+#control-panel select,
+#control-panel button {
+  pointer-events: auto;
+  /* Enable interaction */
+  opacity: 0.2;
+  /* Dim until hover */
+  transition: opacity 0.3s;
+}
+
+#control-panel:hover input,
+#control-panel:hover select,
+#control-panel:hover button {
+  opacity: 1;
+}
+
+.mapping-row {
+  justify-content: flex-end;
+  font-family: var(--mono-font);
+  font-size: 0.65rem;
+  margin-bottom: 4px;
+  opacity: 0.6;
+}
+
+.map-data {
+  color: var(--text-dim);
+}
+
+.map-sound {
+  color: var(--text-primary);
+}
+
+/* Sound Panel - Minimalist / Invisible */
+#sound-explanation-panel {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 220px;
+
+  /* Transparent - Floating Text */
+  background: transparent !important;
+  backdrop-filter: none !important;
+  border: none !important;
+
+  padding: 0;
+  font-family: var(--mono-font);
+  z-index: 100;
+
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 1s ease 1.2s;
+}
+
+#sound-explanation-panel.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#sound-explanation-panel h3 {
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+}
+
+.explanation-row {
+  display: flex;
+  /* Show rows */
+}
+
+.explanation-row {
+  display: flex;
+  /* Show rows again */
+  justify-content: space-between;
+  margin-bottom: 5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 2px;
+}
+
+/* Hide static labels */
+.explanation-log {
+  margin-top: 0;
+  max-height: 200px;
+  border: none;
+  direction: rtl;
+  /* Stack upwards visually if needed, but standard is fine */
+}
+
+.log-entry {
+  font-size: 0.7rem;
+  margin-bottom: 6px;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.log-entry:first-child {
+  opacity: 1;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+/* Typography refinements */
+button,
+select,
+input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-family: var(--mono-font);
+  font-size: 0.7rem;
+  padding: 8px 12px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(2px);
+}
+
+button:hover,
+select:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.preset-btn.active {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+/* Info Panel - Center */
+#info-panel {
+  position: absolute;
+  bottom: 100px;
+  /* Above bottom edge */
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  background: transparent;
+  backdrop-filter: none;
+  border: none;
+  text-align: center;
+  pointer-events: none;
+}
+
+.info-title {
+  font-family: var(--hud-font);
+  font-weight: 100;
+  /* Thin */
+  font-size: 4rem;
+  letter-spacing: -2px;
+  opacity: 0.9;
+}
+
+.info-content {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+}
+
+.info-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 0.5rem;
+  font-family: var(--mono-font);
+  color: var(--text-dim);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+}
+
+.info-value {
+  font-size: 1.2rem;
+  font-weight: 400;
+}
+
+/* START OVERLAY - IMMERSIVE LANDING PAGE */
+#start-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  /* Allow Earth to shine through */
+  backdrop-filter: blur(15px);
+  /* Strong blur for mystery */
+  border: none;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 1.5s ease, visibility 1.5s;
+}
+
+#start-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#start-overlay h1 {
+  font-family: var(--hud-font);
+  font-size: 5vw;
+  font-weight: 100;
+  /* Thin */
+  letter-spacing: 15px;
+  /* Cinematic spacing */
+  margin-bottom: 30px;
+  text-shadow: 0 0 50px rgba(255, 255, 255, 0.8);
+  color: #fff;
+  text-transform: uppercase;
+}
+
+#start-overlay .subtitle {
+  font-size: 1rem;
+  letter-spacing: 5px;
+  opacity: 0.7;
+  margin-bottom: 60px;
+}
+
+#start-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 300;
+  padding: 15px 50px;
+  letter-spacing: 3px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 50px;
+  /* Pill */
+  backdrop-filter: blur(10px);
+  transition: all 0.5s ease;
+  text-transform: uppercase;
+}
+
+#start-btn:hover {
+  background: #fff;
+  color: #000;
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+  border-color: #fff;
+}

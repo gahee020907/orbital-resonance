@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ORBITAL RESONANCE</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles/index.css">
+
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/satellite.js/5.0.0/satellite.min.js"></script>
+</head>
+
+<body>
+  <!-- Canvas Container -->
+  <div id="canvas-container"></div>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-spinner"></div>
+    <div class="loading-status">INITIALIZING SYSTEMS...</div>
+  </div>
+
+  <!-- Start Overlay -->
+  <div id="start-overlay">
+    <h1>ORBITAL RESONANCE</h1>
+    <div class="subtitle" style="margin-bottom: 40px; opacity: 0.7;">SONIFICATION OF SATELLITE DATA</div>
+    <button id="start-btn">ENTER EXPERIENCE</button>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div>
+      <h1>ORBITAL RESONANCE</h1>
+      <div class="subtitle">LIVE SATELLITE TRACKING</div>
+    </div>
+
+    <div class="stats-container">
+      <div class="stat-item">SATELLITES: <span id="satellite-count">0</span></div>
+      <div class="stat-item">FPS: <span id="fps-counter">0</span></div>
+      <div class="stat-item">VOICES: <span id="active-voices">0</span></div>
+    </div>
+  </header>
+
+  <!-- UI Controls (Separate from Header for independent visibility) -->
+  <div class="header-controls">
+    <button id="toggle-ui-btn" class="icon-btn" title="Toggle Panels">CONTROLS</button>
+  </div>
+
+  <!-- Sound Explanation Panel (NEW) -->
+  <div id="sound-explanation-panel">
+    <h3>🎵 SOUND EXPLANATION</h3>
+    <div class="explanation-content">
+      <div class="explanation-row">
+        <span class="label">LAST NOTE</span>
+        <span class="value" id="exp-note">--</span>
+      </div>
+      <div class="explanation-row">
+        <span class="label">SATELLITE</span>
+        <span class="value" id="exp-satellite">--</span>
+      </div>
+      <div class="explanation-row">
+        <span class="label">REASON</span>
+        <span class="value" id="exp-reason">--</span>
+      </div>
+      <div class="explanation-log" id="exp-log">
+        <!-- Log entries will be added here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Panel (Floating) -->
+  <div id="info-panel" class="hidden">
+    <div class="info-title" id="selected-satellite-name">SELECT SATELLITE</div>
+    <div class="info-content">
+      <div class="info-row">
+        <span class="info-label">ALTITUDE</span>
+        <span class="info-value" id="info-altitude">--</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">VELOCITY</span>
+        <span class="info-value" id="info-velocity">--</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">TYPE</span>
+        <span class="info-value" id="info-instrument">--</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Extended Control Panel -->
+  <div id="control-panel" class="hidden">
+    <!-- AUDIO SECTION -->
+    <div class="panel-section">
+      <h3>🔊 AUDIO</h3>
+      <div class="control-group">
+        <label>VOLUME</label>
+        <input type="range" id="master-volume" min="0" max="100" value="70">
+      </div>
+      <div class="control-group">
+        <label>REVERB</label>
+        <input type="range" id="reverb-depth" min="0" max="100" value="50">
+      </div>
+      <div class="control-group">
+        <label>DELAY</label>
+        <input type="range" id="delay-depth" min="0" max="100" value="20">
+      </div>
+    </div>
+
+    <!-- SOUND PRESET SECTION (NEW) -->
+    <div class="panel-section">
+      <h3>🎹 SOUND PRESET</h3>
+      <div class="preset-buttons">
+        <button class="preset-btn active" data-preset="cosmic">COSMIC</button>
+        <button class="preset-btn" data-preset="realism">REALISM</button>
+      </div>
+      <div class="preset-description" id="preset-description">
+        Sparkling starlight. Crystalline bells and magical glissandos.
+      </div>
+    </div>
+
+    <!-- SCALE SELECTION (NEW) -->
+    <div class="panel-section">
+      <h3>🎼 SCALE / KEY</h3>
+      <div class="control-group">
+        <label>KEY</label>
+        <select id="scale-key">
+          <option value="C">C</option>
+          <option value="C#">C#</option>
+          <option value="D">D</option>
+          <option value="D#">D#</option>
+          <option value="E">E</option>
+          <option value="F">F</option>
+          <option value="F#">F#</option>
+          <option value="G">G</option>
+          <option value="G#">G#</option>
+          <option value="A">A</option>
+          <option value="A#">A#</option>
+          <option value="B">B</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label>SCALE</label>
+        <select id="scale-mode">
+          <option value="major">Major</option>
+          <option value="minor">Minor</option>
+          <option value="pentatonic">Pentatonic</option>
+          <option value="dorian">Dorian</option>
+          <option value="mixolydian">Mixolydian</option>
+          <option value="lydian">Lydian</option>
+          <option value="phrygian">Phrygian</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- TRIGGER RULES (NEW) -->
+    <div class="panel-section">
+      <h3>🎯 TRIGGER RULES</h3>
+      <div class="mapping-info">
+        <div class="mapping-row">
+          <span class="map-data">GRID 10°</span>
+          <span class="map-arrow">→</span>
+          <span class="map-sound">Cross Lat/Lon Grid</span>
+        </div>
+        <div class="mapping-row">
+          <span class="map-data">SCREEN</span>
+          <span class="map-arrow">→</span>
+          <span class="map-sound">Enter visible area</span>
+        </div>
+        <div class="mapping-row">
+          <span class="map-data">ZONE</span>
+          <span class="map-arrow">→</span>
+          <span class="map-sound">LEO↔MEO↔GEO</span>
+        </div>
+        <div class="mapping-row">
+          <span class="map-data">BEACON</span>
+          <span class="map-arrow">→</span>
+          <span class="map-sound">Signal check pulse</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAYBACK CONTROLS -->
+    <div class="panel-section">
+      <h3>⏯ CONTROLS</h3>
+      <div class="button-row">
+        <button id="play-pause-btn" class="active">PAUSE</button>
+        <button id="reset-btn">RESET</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modules -->
+  <!-- Modules -->
+  <script src="js/core/DataFetcher.js?v=1.0.0"></script>
+  <script src="js/core/OrbitalMechanics.js?v=1.0.0"></script>
+  <script src="js/core/SatelliteEngine.js?v=1.0.0"></script>
+
+  <script src="js/mapping/ScaleTheory.js?v=1.0.0"></script>
+  <script src="js/mapping/ParameterMapper.js?v=1.0.0"></script>
+
+  <script src="js/audio/Instruments.js?v=1.0.0"></script>
+  <script src="js/audio/HarmonyManager.js?v=1.0.0"></script>
+  <script src="js/audio/AIConductor.js?v=1.0.0"></script>
+  <script src="js/audio/SpatialAudio.js?v=1.0.0"></script>
+  <script src="js/audio/AudioEngine.js?v=1.0.0"></script>
+
+  <script src="js/visual/TrailEffect.js?v=1.0.0"></script>
+  <script src="js/visual/SatelliteRenderer.js?v=1.0.0"></script>
+  <script src="js/visual/EarthRenderer.js?v=1.0.0"></script>
+  <script src="js/visual/VisualEngine.js?v=1.0.0"></script>
+
+  <script src="js/ui/Dashboard.js?v=1.0.0"></script>
+  <script src="js/main.js?v=1.0.0"></script>
+</body>
+
+</html>
