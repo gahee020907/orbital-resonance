@@ -102,35 +102,42 @@ class Instruments {
             DEBRIS: sparkleSynth
         };
 
-        // PRESET 2: REALISM (Telemetry)
-        // PRESET 2: REALISM (Telemetry - Refined)
-        // User Feedback: "Low notes too electronic/ugly". Switching to soft Sine/Triangle.
-        const telem1 = new Tone.PolySynth(Tone.Synth, {
-            oscillator: { type: "sine" }, // Pure tone, no harsh square
-            envelope: { attack: 0.05, decay: 0.3, sustain: 0.2, release: 1.5 }, // Longer release for "pretty" feel
-            volume: -8
-        }).connect(this.masterOut);
+        // PRESET 2: DEEP SPACE (Ambience & Mystery)
+        // Replaces "Realism" with a high-end cinematic soundscape
 
-        const telem2 = new Tone.PolySynth(Tone.FMSynth, {
-            harmonicity: 3, // Reduced from 10 (less metallic)
-            modulationIndex: 5,
+        // 1. Foundation: Deep Drone (AM Synth)
+        const drone = new Tone.PolySynth(Tone.AMSynth, {
+            harmonicity: 2.5,
             oscillator: { type: "sine" },
-            envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 1 },
-            volume: -12
+            envelope: { attack: 2, decay: 3, sustain: 0.5, release: 8 }, // Long fade out
+            modulation: { type: "square", volume: -10 },
+            volume: -10
         }).connect(this.masterOut);
 
-        const staticNoise = new Tone.NoiseSynth({
-            envelope: { attack: 0.01, decay: 0.1, sustain: 0 },
-            volume: -18 // Quieter
+        // 2. Signals: Glassy Chimes (FM Synth)
+        const chime = new Tone.PolySynth(Tone.FMSynth, {
+            harmonicity: 3.01, // Non-integer for metallic sound
+            modulationIndex: 10,
+            oscillator: { type: "sine" },
+            envelope: { attack: 0.05, decay: 0.5, sustain: 0, release: 3 }, // Echoes
+            modulation: { type: "triangle" },
+            volume: -14
         }).connect(this.masterOut);
+
+        // 3. Texture: Cosmic Wind (Noise with Filter)
+        const wind = new Tone.NoiseSynth({
+            noise: { type: "pink" },
+            envelope: { attack: 1, decay: 2, sustain: 0 },
+            volume: -20
+        }).connect(new Tone.Filter(400, "lowpass").connect(this.masterOut));
 
         this.presets.realism = {
-            STATION: telem1,
-            COMMUNICATION: telem2,
-            NAVIGATION: staticNoise,
-            WEATHER: telem1,
-            SCIENCE: telem2,
-            DEBRIS: staticNoise
+            STATION: drone,      // Deep hum for heavy stations
+            COMMUNICATION: chime,// Clear signals for comms
+            NAVIGATION: chime,   // Clear signals for GPS
+            WEATHER: drone,     // Deep hum for weather
+            SCIENCE: wind,       // Mysterious wind for science
+            DEBRIS: wind         // Wind for debris
         };
 
         this.customSynths = [crystalSynth, bellSynth, sparkleSynth, telem1, telem2, staticNoise];
