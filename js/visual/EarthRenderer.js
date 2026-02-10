@@ -21,12 +21,12 @@ class EarthRenderer {
 
         // 1. Core Sphere (Vanta Black)
         p.noStroke();
-        p.fill(0, 0, 0);
+        p.fill(5, 10, 25);
         p.sphere(r);
 
         // 2. Atmospheric Glow (Simple 3D approach)
         // Draw a slightly larger wireframe or transparent sphere
-        p.fill(30, 60, 120, 30); // Transparent Blue
+        p.fill(30, 60, 120, 50); // Transparent Blue
         p.sphere(r * 1.05);
 
         // 3. Rim Highlight (Simulate with another shell or rely on rim lighting if shader used)

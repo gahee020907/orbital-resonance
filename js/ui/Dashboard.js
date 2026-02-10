@@ -8,10 +8,12 @@ class Dashboard {
         this.isInitialized = false;
         this.callbacks = {};
         this.soundLogEntries = [];
+        this.infoPanel = null;
     }
 
     initialize() {
         if (this.isInitialized) return;
+        this.infoPanel = document.getElementById('info-panel');
         this.bindEvents();
         this.isInitialized = true;
     }

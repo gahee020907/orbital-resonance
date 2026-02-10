@@ -140,7 +140,7 @@ class Instruments {
             DEBRIS: wind         // Wind for debris
         };
 
-        this.customSynths = [crystalSynth, bellSynth, sparkleSynth, telem1, telem2, staticNoise];
+        this.customSynths = [crystalSynth, bellSynth, sparkleSynth, drone, chime, wind];
     }
 
     setPreset(presetName) {
