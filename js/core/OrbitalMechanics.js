@@ -46,7 +46,7 @@ class OrbitalMechanics {
                 const sat1 = satellites[i];
                 const sat2 = satellites[j];
 
-                if (!sat1.position?.eciPosition || !sat2.position?.eciPosition) continue;
+                if (!sat1.position || !sat1.position.eciPosition || !sat2.position || !sat2.position.eciPosition) continue;
 
                 const distance = this.calculateDistance(
                     sat1.position.eciPosition,

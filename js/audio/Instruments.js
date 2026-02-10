@@ -212,12 +212,12 @@ class Instruments {
         // Dispose samples
         Object.values(this.samples).forEach(s => s.dispose());
         // Dispose synths
-        this.customSynths?.forEach(s => s.dispose());
+        if (this.customSynths) this.customSynths.forEach(s => s.dispose());
 
-        this.reverb?.dispose();
-        this.delay?.dispose();
-        this.chorus?.dispose();
-        this.limiter?.dispose();
+        if (this.reverb) this.reverb.dispose();
+        if (this.delay) this.delay.dispose();
+        if (this.chorus) this.chorus.dispose();
+        if (this.limiter) this.limiter.dispose();
     }
 }
 

@@ -44,7 +44,7 @@ class EarthRenderer {
 
     setZoom(z) { this.zoom = z; }
     isInsideEarth(x, y, cx, cy) {
-        return Math.sqrt((x - cx) ** 2 + (y - cy) ** 2) < this.getRadius();
+        return Math.sqrt(Math.pow(x - cx, 2) + Math.pow(y - cy, 2)) < this.getRadius();
     }
 }
 

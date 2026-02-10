@@ -54,14 +54,15 @@ class Dashboard {
         }
 
         // UI Toggle
-        document.getElementById('toggle-ui-btn')?.addEventListener('click', () => {
+        var toggleBtn = document.getElementById('toggle-ui-btn');
+        if (toggleBtn) toggleBtn.addEventListener('click', function () {
             document.body.classList.toggle('ui-hidden');
         });
 
         // Sliders
-        this.bindSlider('master-volume', (val) => this.callbacks.onMasterVolumeChange?.(val));
-        this.bindSlider('reverb-depth', (val) => this.callbacks.onReverbChange?.(val));
-        this.bindSlider('delay-depth', (val) => this.callbacks.onDelayChange?.(val));
+        this.bindSlider('master-volume', (val) => { if (this.callbacks.onMasterVolumeChange) this.callbacks.onMasterVolumeChange(val); });
+        this.bindSlider('reverb-depth', (val) => { if (this.callbacks.onReverbChange) this.callbacks.onReverbChange(val); });
+        this.bindSlider('delay-depth', (val) => { if (this.callbacks.onDelayChange) this.callbacks.onDelayChange(val); });
 
         // Preset Buttons
         document.querySelectorAll('.preset-btn').forEach(btn => {
@@ -70,29 +71,35 @@ class Dashboard {
                 e.target.classList.add('active');
                 const preset = e.target.dataset.preset;
                 this.updatePresetDescription(preset);
-                this.callbacks.onPresetChange?.(preset);
+                if (this.callbacks.onPresetChange) this.callbacks.onPresetChange(preset);
             });
         });
 
         // Scale/Key Selectors
-        document.getElementById('scale-key')?.addEventListener('change', (e) => {
-            this.callbacks.onScaleChange?.(e.target.value, document.getElementById('scale-mode')?.value);
+        var scaleKeyEl = document.getElementById('scale-key');
+        if (scaleKeyEl) scaleKeyEl.addEventListener('change', (e) => {
+            var modeEl = document.getElementById('scale-mode');
+            if (this.callbacks.onScaleChange) this.callbacks.onScaleChange(e.target.value, modeEl ? modeEl.value : 'major');
         });
 
-        document.getElementById('scale-mode')?.addEventListener('change', (e) => {
-            this.callbacks.onScaleChange?.(document.getElementById('scale-key')?.value, e.target.value);
+        var scaleModeEl = document.getElementById('scale-mode');
+        if (scaleModeEl) scaleModeEl.addEventListener('change', (e) => {
+            var keyEl = document.getElementById('scale-key');
+            if (this.callbacks.onScaleChange) this.callbacks.onScaleChange(keyEl ? keyEl.value : 'C', e.target.value);
         });
 
         // Buttons
-        document.getElementById('play-pause-btn')?.addEventListener('click', (e) => {
+        var playPauseBtn = document.getElementById('play-pause-btn');
+        if (playPauseBtn) playPauseBtn.addEventListener('click', (e) => {
             const isPlaying = e.target.textContent === 'PLAY';
             e.target.textContent = isPlaying ? 'PAUSE' : 'PLAY';
             e.target.classList.toggle('active', isPlaying);
-            this.callbacks.onPlayPause?.(isPlaying);
+            if (this.callbacks.onPlayPause) this.callbacks.onPlayPause(isPlaying);
         });
 
-        document.getElementById('reset-btn')?.addEventListener('click', () => {
-            this.callbacks.onReset?.();
+        var resetBtn = document.getElementById('reset-btn');
+        if (resetBtn) resetBtn.addEventListener('click', () => {
+            if (this.callbacks.onReset) this.callbacks.onReset();
         });
     }
 
@@ -224,7 +231,8 @@ class Dashboard {
     }
 
     hideLoadingScreen() {
-        document.getElementById('loading-screen')?.classList.add('hidden');
+        var loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) loadingScreen.classList.add('hidden');
     }
 
     setCallbacks(c) { this.callbacks = c; }

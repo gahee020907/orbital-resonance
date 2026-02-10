@@ -240,7 +240,7 @@ class AudioEngine {
             this.stats.eventsPerSecond = this.eventCounter;
             this.eventCounter = 0;
             this.lastStatsUpdate = now;
-            this.stats.voiceCount = this.instruments?.getVoiceCount() || this.stats.eventsPerSecond;
+            this.stats.voiceCount = (this.instruments && this.instruments.getVoiceCount()) || this.stats.eventsPerSecond;
         }
     }
 
@@ -274,7 +274,7 @@ class AudioEngine {
             reverbDepth: this.reverbDepth,
             delayDepth: this.delayDepth,
             stats: this.stats,
-            conductorState: this.aiConductor?.getState() || null
+            conductorState: (this.aiConductor && this.aiConductor.getState()) || null
         };
     }
 
