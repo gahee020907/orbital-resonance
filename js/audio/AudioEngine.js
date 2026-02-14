@@ -19,6 +19,9 @@ class AudioEngine {
         this.reverbDepth = 50;
         this.delayDepth = 20;
 
+        // Manual Control Mode (New)
+        this.manualMode = false;
+
         // Active sounds tracking - PERFORMANCE FIX
         this.lastTriggerTime = new Map();
         this.minTriggerInterval = 1200; // SLOWER (Deep Space, User Request -20%)
@@ -86,14 +89,17 @@ class AudioEngine {
         const collective = this.parameterMapper.mapCollective(satellites);
         const conductorResult = this.aiConductor.analyze(collective);
 
-        // AUTO-CONDUCTOR: Apply Scale Changes
-        if (conductorResult.mood) {
+        // AUTO-CONDUCTOR: Apply Scale Changes (ONLY IF NOT MANUAL)
+        if (!this.manualMode && conductorResult.mood) {
             const suggestedScale = this.aiConductor.getMoodScale();
             // Only change if different from current (optimization)
             if (this.scaleTheory.currentScale !== suggestedScale) {
                 // Pass Key NAME not Index
                 const currentKeyName = this.scaleTheory.noteNames[this.scaleTheory.currentKey];
-                this.setScale(currentKeyName, suggestedScale);
+                // Do NOT set manualMode here, this is automatic
+                if (this.scaleTheory) {
+                    this.scaleTheory.setMode(suggestedScale);
+                }
             }
         }
 
@@ -166,8 +172,9 @@ class AudioEngine {
         // 3. Prepare Note (HARMONIC BEAUTY)
         let noteToPlay = audioParams.note;
 
-        // Force to Chord Tones if available
-        if (conductorResult && conductorResult.allowedNotes) {
+        // Force to Chord Tones if available, BUT skip if Manual Mode
+        // In Manual Mode, we want the pure scale notes, not constrained to the AI's chord progression
+        if (!this.manualMode && conductorResult && conductorResult.allowedNotes) {
             noteToPlay = this.scaleTheory.constrainToChord(noteToPlay, conductorResult.allowedNotes);
         }
 
@@ -225,10 +232,13 @@ class AudioEngine {
 
     // Scale changing
     setScale(key, mode) {
+        // User Interaction -> Enable Manual Mode
+        this.manualMode = true;
+        console.log(`🎼 Manual Scale Set: ${key} ${mode}`);
+
         if (this.scaleTheory) {
             this.scaleTheory.setKey(key);
             this.scaleTheory.setMode(mode);
-            // console.log(`🎼 Scale changed to: ${key} ${mode}`); // Too verbose
         }
     }
 
