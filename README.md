@@ -1,9 +1,11 @@
 # ORBITAL RESONANCE (v1.0.3)
 ## Live Satellite Sonification
 
+**🔗 [LIVE DEMO: Enter Experience](https://gahee020907.github.io/orbital-resonance/)**
+
 This project visualizes and sonifies real-time satellite data using SGP4 propagation and Web Audio (Tone.js).
 
-### 🚀 How to Run
+### 🚀 Running Locally (For Developers)
 
 1.  **Open Terminal** in this folder.
 2.  Run the local server command:
