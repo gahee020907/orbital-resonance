@@ -10,10 +10,10 @@ This project visualizes and sonifies real-time satellite data using SGP4 propaga
 1.  **Open Terminal** in this folder.
 2.  Run the local server command:
     ```bash
-    python3 -m http.server 8080
+    python3 -m http.server 8888
     ```
 3.  Open your browser to:
-    [http://localhost:8080](http://localhost:8080)
+    [http://localhost:8888](http://localhost:8888)
 
 ### 🎵 Key Features
 
