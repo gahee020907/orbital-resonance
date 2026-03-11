@@ -140,75 +140,91 @@ class Instruments {
             DEBRIS: wind         // Wind for debris
         };
 
-        // PRESET 3: JAZZ (Warm, mellow, Rhodes-like)
+        // PRESET 3: JAZZ (Real Samples - Piano, Bass, Saxophone, Xylophone)
+        const sampleBase = "https://nbrosowsky.github.io/tonejs-instruments/samples/";
 
-        // Electric Piano (Rhodes feel) - FM Synth with warm harmonics
-        const rhodesKeys = new Tone.PolySynth(Tone.FMSynth, {
-            harmonicity: 3.5,
-            modulationIndex: 1.5,
-            oscillator: { type: "sine" },
-            envelope: { attack: 0.01, decay: 1.2, sustain: 0.3, release: 1.5 },
-            modulation: { type: "sine" },
-            volume: -10
+        // Jazz Piano (Real Samples)
+        const jazzPiano = new Tone.Sampler({
+            urls: { C3: "C3.mp3", C4: "C4.mp3", C5: "C5.mp3", A3: "A3.mp3", A4: "A4.mp3" },
+            baseUrl: sampleBase + "piano/",
+            release: 1.5,
+            volume: -8,
+            onload: () => console.log("🎹 Jazz Piano samples loaded")
         }).connect(this.masterOut);
 
-        // Walking Bass - Deep warm tone
-        const walkingBass = new Tone.PolySynth(Tone.Synth, {
-            oscillator: { type: "triangle" },
-            envelope: { attack: 0.02, decay: 0.8, sustain: 0.2, release: 0.5 },
-            volume: -8
+        // Contrabass (Walking Bass)
+        const contrabass = new Tone.Sampler({
+            urls: { A1: "A1.mp3", C2: "C2.mp3", E2: "E2.mp3", A2: "A2.mp3", C3: "C3.mp3" },
+            baseUrl: sampleBase + "contrabass/",
+            release: 0.8,
+            volume: -6,
+            onload: () => console.log("🎸 Contrabass samples loaded")
         }).connect(this.masterOut);
 
-        // Brush / Hi-hat texture
+        // Saxophone
+        const saxophone = new Tone.Sampler({
+            urls: { C3: "C3.mp3", E3: "E3.mp3", A3: "A3.mp3", C4: "C4.mp3", E4: "E4.mp3", A4: "A4.mp3" },
+            baseUrl: sampleBase + "saxophone/",
+            release: 1,
+            volume: -10,
+            onload: () => console.log("🎷 Saxophone samples loaded")
+        }).connect(this.masterOut);
+
+        // Xylophone (Percussion melody)
+        const xylophone = new Tone.Sampler({
+            urls: { C4: "C4.mp3", E4: "E4.mp3", G4: "G4.mp3", C5: "C5.mp3", E5: "E5.mp3" },
+            baseUrl: sampleBase + "xylophone/",
+            release: 0.5,
+            volume: -12,
+            onload: () => console.log("🔔 Xylophone samples loaded")
+        }).connect(this.masterOut);
+
+        // Brush hit (keep synth - no good sample for this)
         const brushHit = new Tone.NoiseSynth({
             noise: { type: "white" },
             envelope: { attack: 0.002, decay: 0.15, sustain: 0 },
             volume: -22
         }).connect(new Tone.Filter(6000, "highpass").connect(this.masterOut));
 
-        // Vibes (Mellow bell)
-        const vibes = new Tone.PolySynth(Tone.FMSynth, {
-            harmonicity: 6,
-            modulationIndex: 0.8,
-            oscillator: { type: "sine" },
-            envelope: { attack: 0.005, decay: 1.5, sustain: 0, release: 2 },
-            modulation: { type: "sine" },
-            volume: -14
-        }).connect(this.masterOut);
-
         this.presets.jazz = {
-            STATION: walkingBass,     // Deep walking bass
-            COMMUNICATION: rhodesKeys,// Rhodes keys
-            NAVIGATION: vibes,        // Mellow vibes
-            WEATHER: rhodesKeys,      // Rhodes texture
-            SCIENCE: vibes,           // Bell-like vibes
-            DEBRIS: brushHit          // Brush hits
+            STATION: contrabass,       // Walking bass
+            COMMUNICATION: jazzPiano,  // Piano comping
+            NAVIGATION: saxophone,     // Sax melody
+            WEATHER: jazzPiano,        // Piano fill
+            SCIENCE: xylophone,        // Xylophone sparkle
+            DEBRIS: brushHit           // Brush texture
         };
 
-        // PRESET 4: BAND (Rock/Pop energy)
+        // PRESET 4: BAND (Real Samples - Electric Guitar, Bass, Trumpet)
 
-        // Overdriven Guitar - Distorted square wave
-        const guitarSynth = new Tone.PolySynth(Tone.Synth, {
-            oscillator: { type: "square8" },
-            envelope: { attack: 0.01, decay: 0.3, sustain: 0.4, release: 0.8 },
-            volume: -14
-        }).connect(new Tone.Distortion(0.4).connect(this.masterOut));
+        // Electric Guitar
+        const electricGuitar = new Tone.Sampler({
+            urls: { A2: "A2.mp3", C3: "C3.mp3", E3: "E3.mp3", A3: "A3.mp3", C4: "C4.mp3", E4: "E4.mp3" },
+            baseUrl: sampleBase + "guitar-electric/",
+            release: 0.8,
+            volume: -8,
+            onload: () => console.log("🎸 Electric Guitar samples loaded")
+        }).connect(new Tone.Distortion(0.3).connect(this.masterOut));
 
-        // Punchy Bass
-        const punchBass = new Tone.PolySynth(Tone.Synth, {
-            oscillator: { type: "sawtooth" },
-            envelope: { attack: 0.005, decay: 0.3, sustain: 0.1, release: 0.3 },
-            volume: -10
-        }).connect(new Tone.Filter(800, "lowpass").connect(this.masterOut));
-
-        // Bright Lead Synth
-        const leadSynth = new Tone.PolySynth(Tone.Synth, {
-            oscillator: { type: "sawtooth" },
-            envelope: { attack: 0.01, decay: 0.5, sustain: 0.3, release: 0.6 },
-            volume: -12
+        // Electric Bass
+        const electricBass = new Tone.Sampler({
+            urls: { A1: "A1.mp3", C2: "C2.mp3", E2: "E2.mp3", A2: "A2.mp3", C3: "C3.mp3" },
+            baseUrl: sampleBase + "bass-electric/",
+            release: 0.5,
+            volume: -6,
+            onload: () => console.log("🎸 Electric Bass samples loaded")
         }).connect(this.masterOut);
 
-        // Snare-like hit
+        // Trumpet (Lead)
+        const trumpet = new Tone.Sampler({
+            urls: { C3: "C3.mp3", E3: "E3.mp3", A3: "A3.mp3", C4: "C4.mp3", E4: "E4.mp3", A4: "A4.mp3" },
+            baseUrl: sampleBase + "trumpet/",
+            release: 1,
+            volume: -10,
+            onload: () => console.log("🎺 Trumpet samples loaded")
+        }).connect(this.masterOut);
+
+        // Snare (keep synth)
         const snareHit = new Tone.NoiseSynth({
             noise: { type: "white" },
             envelope: { attack: 0.001, decay: 0.2, sustain: 0 },
@@ -216,19 +232,19 @@ class Instruments {
         }).connect(new Tone.Filter(3000, "bandpass").connect(this.masterOut));
 
         this.presets.band = {
-            STATION: punchBass,       // Heavy bass
-            COMMUNICATION: guitarSynth,// Distorted guitar
-            NAVIGATION: leadSynth,    // Bright lead
-            WEATHER: guitarSynth,     // Guitar texture
-            SCIENCE: leadSynth,       // Lead synth
-            DEBRIS: snareHit          // Snare hits
+            STATION: electricBass,      // Heavy bass
+            COMMUNICATION: electricGuitar, // Distorted guitar
+            NAVIGATION: trumpet,        // Trumpet lead
+            WEATHER: electricGuitar,    // Guitar riff
+            SCIENCE: trumpet,           // Trumpet solo
+            DEBRIS: snareHit            // Snare hit
         };
 
         this.customSynths = [
-            crystalSynth, bellSynth, sparkleSynth,  // Cosmic
-            drone, chime, wind,                       // Realism
-            rhodesKeys, walkingBass, brushHit, vibes, // Jazz
-            guitarSynth, punchBass, leadSynth, snareHit // Band
+            crystalSynth, bellSynth, sparkleSynth,   // Cosmic
+            drone, chime, wind,                        // Realism
+            jazzPiano, contrabass, saxophone, xylophone, brushHit, // Jazz
+            electricGuitar, electricBass, trumpet, snareHit  // Band
         ];
     }
 
