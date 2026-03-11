@@ -25,9 +25,9 @@ class Instruments {
         this.limiter = new Tone.Limiter(-2).toDestination();
 
         this.reverb = new Tone.Reverb({
-            decay: 6,
+            decay: 2.5,
             preDelay: 0.1,
-            wet: 0.5
+            wet: 0.35
         }).connect(this.limiter);
         await this.reverb.generate();
 

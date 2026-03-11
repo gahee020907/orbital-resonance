@@ -24,9 +24,9 @@ class AudioEngine {
 
         // Active sounds tracking - PERFORMANCE FIX
         this.lastTriggerTime = new Map();
-        this.minTriggerInterval = 1200; // SLOWER (Deep Space, User Request -20%)
+        this.minTriggerInterval = 800; // Faster for clearer scale perception
         this.globalLastTrigger = 0;
-        this.globalTriggerInterval = 600; // SPARSE
+        this.globalTriggerInterval = 300; // Denser
 
         // Sound explanation callback
         this.onSoundPlayed = null;
@@ -154,7 +154,7 @@ class AudioEngine {
             const altitude = satellite.position.altitude || 500;
             const speedFactor = 1 - Math.min(altitude / 30000, 1);
             // Increase interval to 15s-45s for sparser sound
-            const minInterval = 15000 + (1 - speedFactor) * 30000;
+            const minInterval = 8000 + (1 - speedFactor) * 15000;
 
             const density = this.harmonyManager ? this.harmonyManager.getDensity() : 0.1;
 

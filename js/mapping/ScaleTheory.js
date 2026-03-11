@@ -41,12 +41,12 @@ class ScaleTheory {
 
         // Octave ranges by satellite category
         this.octaveRanges = {
-            STATION: [1, 2],      // Deep bass
-            COMMUNICATION: [4, 5], // Shimmer
-            NAVIGATION: [4, 6],    // High
-            WEATHER: [3, 5],       // Mid
-            SCIENCE: [5, 6],       // Sparkles
-            DEBRIS: [6, 7]         // Glitch
+            STATION: [3, 4],      // Warm low-mid
+            COMMUNICATION: [4, 5], // Mid
+            NAVIGATION: [4, 5],    // Mid
+            WEATHER: [3, 5],       // Mid spread
+            SCIENCE: [5, 5],       // Upper-mid
+            DEBRIS: [5, 6]         // High sparkle
         };
 
         // Current scale and key
