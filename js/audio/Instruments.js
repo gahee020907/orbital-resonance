@@ -195,56 +195,67 @@ class Instruments {
             DEBRIS: brushHit           // Brush texture
         };
 
-        // PRESET 4: BAND (Real Samples - Electric Guitar, Bass, Trumpet)
+        // PRESET 4: BAND (Drums + Guitar + Bass)
 
-        // Electric Guitar
-        const electricGuitar = new Tone.Sampler({
+        // Kick Drum (MembraneSynth)
+        const kickDrum = new Tone.MembraneSynth({
+            pitchDecay: 0.05,
+            octaves: 6,
+            oscillator: { type: "sine" },
+            envelope: { attack: 0.001, decay: 0.4, sustain: 0, release: 0.4 },
+            volume: -4
+        }).connect(this.masterOut);
+
+        // Snare Drum
+        const snareDrum = new Tone.NoiseSynth({
+            noise: { type: "white" },
+            envelope: { attack: 0.001, decay: 0.25, sustain: 0 },
+            volume: -10
+        }).connect(new Tone.Filter(4000, "bandpass").connect(this.masterOut));
+
+        // Hi-hat (MetalSynth)
+        const hihat = new Tone.MetalSynth({
+            frequency: 400,
+            envelope: { attack: 0.001, decay: 0.1, release: 0.05 },
+            harmonicity: 5.1,
+            modulationIndex: 32,
+            resonance: 4000,
+            octaves: 1.5,
+            volume: -16
+        }).connect(this.masterOut);
+
+        // Electric Guitar (Real Sample)
+        const bandGuitar = new Tone.Sampler({
             urls: { A2: "A2.mp3", C3: "C3.mp3", E3: "E3.mp3", A3: "A3.mp3", C4: "C4.mp3", E4: "E4.mp3" },
             baseUrl: sampleBase + "guitar-electric/",
             release: 0.8,
             volume: -8,
-            onload: () => console.log("🎸 Electric Guitar samples loaded")
+            onload: () => console.log("🎸 Band Guitar samples loaded")
         }).connect(new Tone.Distortion(0.3).connect(this.masterOut));
 
-        // Electric Bass
-        const electricBass = new Tone.Sampler({
+        // Electric Bass (Real Sample)
+        const bandBass = new Tone.Sampler({
             urls: { A1: "A1.mp3", C2: "C2.mp3", E2: "E2.mp3", A2: "A2.mp3", C3: "C3.mp3" },
             baseUrl: sampleBase + "bass-electric/",
             release: 0.5,
             volume: -6,
-            onload: () => console.log("🎸 Electric Bass samples loaded")
+            onload: () => console.log("🎸 Band Bass samples loaded")
         }).connect(this.masterOut);
-
-        // Trumpet (Lead)
-        const trumpet = new Tone.Sampler({
-            urls: { C3: "C3.mp3", E3: "E3.mp3", A3: "A3.mp3", C4: "C4.mp3", E4: "E4.mp3", A4: "A4.mp3" },
-            baseUrl: sampleBase + "trumpet/",
-            release: 1,
-            volume: -10,
-            onload: () => console.log("🎺 Trumpet samples loaded")
-        }).connect(this.masterOut);
-
-        // Snare (keep synth)
-        const snareHit = new Tone.NoiseSynth({
-            noise: { type: "white" },
-            envelope: { attack: 0.001, decay: 0.2, sustain: 0 },
-            volume: -18
-        }).connect(new Tone.Filter(3000, "bandpass").connect(this.masterOut));
 
         this.presets.band = {
-            STATION: electricBass,      // Heavy bass
-            COMMUNICATION: electricGuitar, // Distorted guitar
-            NAVIGATION: trumpet,        // Trumpet lead
-            WEATHER: electricGuitar,    // Guitar riff
-            SCIENCE: trumpet,           // Trumpet solo
-            DEBRIS: snareHit            // Snare hit
+            STATION: kickDrum,          // Kick drum thump
+            COMMUNICATION: bandGuitar,  // Electric guitar riff
+            NAVIGATION: bandBass,       // Bass groove
+            WEATHER: hihat,             // Hi-hat shimmer
+            SCIENCE: bandGuitar,        // Guitar lead
+            DEBRIS: snareDrum           // Snare crack
         };
 
         this.customSynths = [
             crystalSynth, bellSynth, sparkleSynth,   // Cosmic
             drone, chime, wind,                        // Realism
             jazzPiano, contrabass, saxophone, xylophone, brushHit, // Jazz
-            electricGuitar, electricBass, trumpet, snareHit  // Band
+            kickDrum, snareDrum, hihat, bandGuitar, bandBass  // Band
         ];
     }
 
@@ -302,9 +313,12 @@ class Instruments {
         }
 
         try {
-            // NoiseSynth does NOT accept a note parameter
-            if (source instanceof Tone.NoiseSynth) {
+            // NoiseSynth and MetalSynth do NOT accept a note parameter
+            if (source instanceof Tone.NoiseSynth || source instanceof Tone.MetalSynth) {
                 source.triggerAttackRelease(effectiveDuration, options.time, velocity);
+            } else if (source instanceof Tone.MembraneSynth) {
+                // Kick drum: always play low for that deep thump
+                source.triggerAttackRelease('C1', effectiveDuration, options.time, velocity);
             } else if (source.triggerAttackRelease) {
                 source.triggerAttackRelease(note, effectiveDuration, options.time, velocity);
             }
