@@ -31,7 +31,7 @@ class DataFetcher {
 
       // Robustness: 5s Timeout for Network Fetch
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
 
       const response = await fetch(url, { signal: controller.signal });
       clearTimeout(timeoutId);
