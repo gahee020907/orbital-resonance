@@ -111,7 +111,9 @@ class Dashboard {
     updatePresetDescription(preset) {
         const descriptions = {
             cosmic: "Sparkling starlight. Crystalline bells and magical glissandos.",
-            realism: "Raw Data Sonification. Telemetry signals and radio static."
+            realism: "Raw Data Sonification. Telemetry signals and radio static.",
+            jazz: "Warm Rhodes keys, walking bass, and mellow vibraphone.",
+            band: "Overdriven guitar, punchy bass, and bright lead synth."
         };
         const el = document.getElementById('preset-description');
         if (el) el.textContent = descriptions[preset] || "";

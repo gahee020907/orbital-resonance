@@ -140,7 +140,96 @@ class Instruments {
             DEBRIS: wind         // Wind for debris
         };
 
-        this.customSynths = [crystalSynth, bellSynth, sparkleSynth, drone, chime, wind];
+        // PRESET 3: JAZZ (Warm, mellow, Rhodes-like)
+
+        // Electric Piano (Rhodes feel) - FM Synth with warm harmonics
+        const rhodesKeys = new Tone.PolySynth(Tone.FMSynth, {
+            harmonicity: 3.5,
+            modulationIndex: 1.5,
+            oscillator: { type: "sine" },
+            envelope: { attack: 0.01, decay: 1.2, sustain: 0.3, release: 1.5 },
+            modulation: { type: "sine" },
+            volume: -10
+        }).connect(this.masterOut);
+
+        // Walking Bass - Deep warm tone
+        const walkingBass = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "triangle" },
+            envelope: { attack: 0.02, decay: 0.8, sustain: 0.2, release: 0.5 },
+            volume: -8
+        }).connect(this.masterOut);
+
+        // Brush / Hi-hat texture
+        const brushHit = new Tone.NoiseSynth({
+            noise: { type: "white" },
+            envelope: { attack: 0.002, decay: 0.15, sustain: 0 },
+            volume: -22
+        }).connect(new Tone.Filter(6000, "highpass").connect(this.masterOut));
+
+        // Vibes (Mellow bell)
+        const vibes = new Tone.PolySynth(Tone.FMSynth, {
+            harmonicity: 6,
+            modulationIndex: 0.8,
+            oscillator: { type: "sine" },
+            envelope: { attack: 0.005, decay: 1.5, sustain: 0, release: 2 },
+            modulation: { type: "sine" },
+            volume: -14
+        }).connect(this.masterOut);
+
+        this.presets.jazz = {
+            STATION: walkingBass,     // Deep walking bass
+            COMMUNICATION: rhodesKeys,// Rhodes keys
+            NAVIGATION: vibes,        // Mellow vibes
+            WEATHER: rhodesKeys,      // Rhodes texture
+            SCIENCE: vibes,           // Bell-like vibes
+            DEBRIS: brushHit          // Brush hits
+        };
+
+        // PRESET 4: BAND (Rock/Pop energy)
+
+        // Overdriven Guitar - Distorted square wave
+        const guitarSynth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "square8" },
+            envelope: { attack: 0.01, decay: 0.3, sustain: 0.4, release: 0.8 },
+            volume: -14
+        }).connect(new Tone.Distortion(0.4).connect(this.masterOut));
+
+        // Punchy Bass
+        const punchBass = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "sawtooth" },
+            envelope: { attack: 0.005, decay: 0.3, sustain: 0.1, release: 0.3 },
+            volume: -10
+        }).connect(new Tone.Filter(800, "lowpass").connect(this.masterOut));
+
+        // Bright Lead Synth
+        const leadSynth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "sawtooth" },
+            envelope: { attack: 0.01, decay: 0.5, sustain: 0.3, release: 0.6 },
+            volume: -12
+        }).connect(this.masterOut);
+
+        // Snare-like hit
+        const snareHit = new Tone.NoiseSynth({
+            noise: { type: "white" },
+            envelope: { attack: 0.001, decay: 0.2, sustain: 0 },
+            volume: -18
+        }).connect(new Tone.Filter(3000, "bandpass").connect(this.masterOut));
+
+        this.presets.band = {
+            STATION: punchBass,       // Heavy bass
+            COMMUNICATION: guitarSynth,// Distorted guitar
+            NAVIGATION: leadSynth,    // Bright lead
+            WEATHER: guitarSynth,     // Guitar texture
+            SCIENCE: leadSynth,       // Lead synth
+            DEBRIS: snareHit          // Snare hits
+        };
+
+        this.customSynths = [
+            crystalSynth, bellSynth, sparkleSynth,  // Cosmic
+            drone, chime, wind,                       // Realism
+            rhodesKeys, walkingBass, brushHit, vibes, // Jazz
+            guitarSynth, punchBass, leadSynth, snareHit // Band
+        ];
     }
 
     setPreset(presetName) {
