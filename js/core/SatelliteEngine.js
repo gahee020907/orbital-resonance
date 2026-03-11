@@ -103,9 +103,9 @@ class SatelliteEngine {
 
             // Calculate velocity magnitude
             const velocity = Math.sqrt(
-                velocityEci.x ** 2 +
-                velocityEci.y ** 2 +
-                velocityEci.z ** 2
+                velocityEci.x * velocityEci.x +
+                velocityEci.y * velocityEci.y +
+                velocityEci.z * velocityEci.z
             ); // km/s
 
             // Calculate orbital period (minutes)

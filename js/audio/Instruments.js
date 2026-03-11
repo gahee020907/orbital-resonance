@@ -148,24 +148,11 @@ class Instruments {
         this.currentPreset = presetName;
         console.log(`🎵 Preset changed to: ${presetName}`);
 
-        // MUSICAL BEAUTY FIX: Adjust Params per Preset
-        if (presetName === 'ambient') {
-            this.setReverbMix(0.8); // Lush Reverb (Was 0.6)
-            if (this.samples.piano) this.samples.piano.release = 6; // Long Sustain (Was 3)
-            if (this.samples.cello) this.samples.cello.release = 5; // Long Bow
-            if (this.samples.flute) this.samples.flute.release = 4;
-        } else if (presetName === 'strings') {
-            this.setReverbMix(0.6); // Concert Hall
-            if (this.samples.violin) this.samples.violin.release = 3;
-            if (this.samples.cello) this.samples.cello.release = 3;
-            if (this.samples.guitar) this.samples.guitar.release = 3;
-        } else if (presetName === 'gugak') {
-            this.setReverbMix(0.3);
-            if (this.samples.guitar) this.samples.guitar.release = 1.0; // Snappy
-            if (this.samples.flute) this.samples.flute.release = 2;
-        } else if (presetName === 'chime') {
+        // Adjust effect parameters per preset
+        if (presetName === 'cosmic') {
             this.setReverbMix(0.5);
-            // Synths handle their own envelopes
+        } else if (presetName === 'realism') {
+            this.setReverbMix(0.7); // Deep space reverb
         }
     }
 
@@ -180,18 +167,19 @@ class Instruments {
         velocity = Math.pow(velocity, 0.7); // Less extreme curve
         if (velocity > 1) velocity = 1;
 
-        // CLEAN FIX: Standard Durations
-        // 4s was too long and caused mud.
+        // Adjust duration per preset
         let effectiveDuration = duration;
-        if (this.currentPreset === 'ambient') {
+        if (this.currentPreset === 'cosmic') {
             effectiveDuration = 2.5; // Moderate sustain
-        } else if (this.currentPreset === 'strings') {
-            effectiveDuration = 1.5; // Defined bow strokes
+        } else if (this.currentPreset === 'realism') {
+            effectiveDuration = 1.5; // Shorter for clarity
         }
 
         try {
-            // Check for both Sampler and Synth
-            if (source.triggerAttackRelease) {
+            // NoiseSynth does NOT accept a note parameter
+            if (source instanceof Tone.NoiseSynth) {
+                source.triggerAttackRelease(effectiveDuration, options.time, velocity);
+            } else if (source.triggerAttackRelease) {
                 source.triggerAttackRelease(note, effectiveDuration, options.time, velocity);
             }
         } catch (e) { }

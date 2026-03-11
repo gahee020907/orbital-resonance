@@ -22,6 +22,8 @@ class ScaleTheory {
             // Space-like scales
             lydian: [0, 2, 4, 6, 7, 9, 11],        // Bright, floating
             dorian: [0, 2, 3, 5, 7, 9, 10],        // Neutral, spacey
+            mixolydian: [0, 2, 4, 5, 7, 9, 10],    // Bluesy, groovy
+            phrygian: [0, 1, 3, 5, 7, 8, 10],      // Dark, exotic
 
             // CUSTOM COSMIC SCALES (Ethereal)
             // Lydian #2 (#9) = [0, 3, 4, 6, 7, 11] ? No, let's do:
