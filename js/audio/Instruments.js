@@ -237,11 +237,28 @@ class Instruments {
         this.currentPreset = presetName;
         console.log(`🎵 Preset changed to: ${presetName}`);
 
-        // Adjust effect parameters per preset
+        // DRAMATICALLY different effects per preset
         if (presetName === 'cosmic') {
             this.setReverbMix(0.5);
+            this.setDelayMix(0.2);
+            if (this.chorus) this.chorus.wet.value = 0.3;
+            if (this.reverb) this.reverb.decay = 2.5;
         } else if (presetName === 'realism') {
-            this.setReverbMix(0.7); // Deep space reverb
+            this.setReverbMix(0.7);
+            this.setDelayMix(0.1);
+            if (this.chorus) this.chorus.wet.value = 0.1;
+            if (this.reverb) this.reverb.decay = 4;
+        } else if (presetName === 'jazz') {
+            this.setReverbMix(0.3);
+            this.setDelayMix(0.35);  // Swing-like delay
+            if (this.chorus) this.chorus.wet.value = 0.4;
+            if (this.delay) this.delay.delayTime.value = 0.3; // Dotted feel
+            if (this.reverb) this.reverb.decay = 1.5; // Tight room
+        } else if (presetName === 'band') {
+            this.setReverbMix(0.1);   // Very dry
+            this.setDelayMix(0.05);   // Almost no delay
+            if (this.chorus) this.chorus.wet.value = 0.05;
+            if (this.reverb) this.reverb.decay = 0.8; // Tiny room
         }
     }
 
@@ -253,15 +270,19 @@ class Instruments {
 
         // Velocity Dynamics
         let velocity = (options.volume || 1);
-        velocity = Math.pow(velocity, 0.7); // Less extreme curve
+        velocity = Math.pow(velocity, 0.7);
         if (velocity > 1) velocity = 1;
 
-        // Adjust duration per preset
+        // Duration per preset - each feels different
         let effectiveDuration = duration;
         if (this.currentPreset === 'cosmic') {
-            effectiveDuration = 2.5; // Moderate sustain
+            effectiveDuration = 2.5; // Long, ethereal
         } else if (this.currentPreset === 'realism') {
-            effectiveDuration = 1.5; // Shorter for clarity
+            effectiveDuration = 1.5; // Medium drone
+        } else if (this.currentPreset === 'jazz') {
+            effectiveDuration = 0.6; // Short, staccato like comping
+        } else if (this.currentPreset === 'band') {
+            effectiveDuration = 0.3; // Punchy, tight hits
         }
 
         try {
