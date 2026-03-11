@@ -14,6 +14,20 @@ class OrbitalResonanceApp {
 
     async initialize() {
         console.log('🌌 Initializing Orbital Resonance...');
+
+        // Register event FIRST to avoid race condition
+        this.pendingStart = false;
+        document.addEventListener('orbital-start', () => {
+            if (this.isReady) {
+                this.start();
+            } else {
+                this.pendingStart = true;
+                console.log('⏳ Start requested, waiting for initialization...');
+            }
+        });
+
+        this.isReady = false;
+
         try {
             this.dashboard = new Dashboard();
             this.dashboard.initialize();
@@ -30,9 +44,14 @@ class OrbitalResonanceApp {
 
             this.dashboard.hideLoadingScreen();
 
-            document.addEventListener('orbital-start', () => {
+            this.isReady = true;
+            console.log('✅ All systems ready');
+
+            // If user already clicked "ENTER EXPERIENCE" during loading, start now
+            if (this.pendingStart) {
+                console.log('🚀 Pending start detected, launching now!');
                 this.start();
-            });
+            }
         } catch (e) {
             console.error("❌ CRITICAL INITIALIZATION ERROR:", e);
             document.querySelector('.loading-status').textContent = "ERROR: " + e.message;
