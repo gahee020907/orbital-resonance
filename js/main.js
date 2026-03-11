@@ -140,8 +140,32 @@ class OrbitalResonanceApp {
     }
 
     async start() {
+        // Force-hide ALL overlays to guarantee the experience is visible
+        var loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) loadingScreen.style.display = 'none';
+
+        var startOverlay = document.getElementById('start-overlay');
+        if (startOverlay) startOverlay.style.display = 'none';
+
+        // Force-show HUD
+        var header = document.querySelector('header');
+        if (header) header.classList.add('visible');
+
+        var controls = document.getElementById('control-panel');
+        if (controls) {
+            controls.classList.remove('hidden');
+            controls.classList.add('visible');
+        }
+
+        var soundPanel = document.getElementById('sound-explanation-panel');
+        if (soundPanel) {
+            soundPanel.classList.remove('hidden');
+            soundPanel.classList.add('visible');
+        }
+
         await this.audioEngine.initialize();
         this.isRunning = true;
+        console.log('🎵 Experience started! Satellites:', this.satelliteEngine.satellites.length);
         this.loop();
     }
 
