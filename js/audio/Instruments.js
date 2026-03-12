@@ -147,8 +147,8 @@ class Instruments {
         const jazzPiano = new Tone.Sampler({
             urls: { C3: "C3.mp3", C4: "C4.mp3", C5: "C5.mp3", A3: "A3.mp3", A4: "A4.mp3" },
             baseUrl: sampleBase + "piano/",
-            release: 1.5,
-            volume: -8,
+            release: 0.6, // Tighter for rhythmic comping
+            volume: -6,  // Louder
             onload: () => console.log("🎹 Jazz Piano samples loaded")
         }).connect(this.masterOut);
 
@@ -156,8 +156,8 @@ class Instruments {
         const contrabass = new Tone.Sampler({
             urls: { A1: "A1.mp3", C2: "C2.mp3", E2: "E2.mp3", A2: "A2.mp3", C3: "C3.mp3" },
             baseUrl: sampleBase + "contrabass/",
-            release: 0.8,
-            volume: -6,
+            release: 0.4, // Short and punchy
+            volume: -4,
             onload: () => console.log("🎸 Contrabass samples loaded")
         }).connect(this.masterOut);
 
@@ -203,25 +203,25 @@ class Instruments {
             octaves: 6,
             oscillator: { type: "sine" },
             envelope: { attack: 0.001, decay: 0.4, sustain: 0, release: 0.4 },
-            volume: -4
+            volume: -2 // Punchier
         }).connect(this.masterOut);
 
         // Snare Drum
         const snareDrum = new Tone.NoiseSynth({
             noise: { type: "white" },
-            envelope: { attack: 0.001, decay: 0.25, sustain: 0 },
-            volume: -10
-        }).connect(new Tone.Filter(4000, "bandpass").connect(this.masterOut));
+            envelope: { attack: 0.001, decay: 0.2, sustain: 0 },
+            volume: -6 // Clearer backbeat
+        }).connect(new Tone.Filter(3000, "bandpass").connect(this.masterOut));
 
         // Hi-hat (MetalSynth)
         const hihat = new Tone.MetalSynth({
             frequency: 400,
-            envelope: { attack: 0.001, decay: 0.1, release: 0.05 },
+            envelope: { attack: 0.001, decay: 0.08, release: 0.05 },
             harmonicity: 5.1,
             modulationIndex: 32,
             resonance: 4000,
             octaves: 1.5,
-            volume: -16
+            volume: -14
         }).connect(this.masterOut);
 
         // Electric Guitar (Real Sample)

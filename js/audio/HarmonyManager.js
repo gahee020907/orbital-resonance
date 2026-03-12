@@ -56,13 +56,27 @@ class HarmonyManager {
     }
 
     /**
-     * Constrain note - but "Softly".
-     * Instead of forcing it, we might shift it by an octave or slight detune
-     * to create texture.
+     * Constrain note for musical flow.
+     * For JAZZ/BAND, we implement a "Walking Bass" or "Melodic Lead" logic.
      */
-    constrainNote(noteName) {
-        // For "Ethereal Flow", we trust ScaleTheory's generic mapping
-        // but maybe force high octaves for specific moods
+    constrainNote(noteName, category) {
+        if (!this.lastNotes) this.lastNotes = {};
+
+        // 1. Walking Bass Logic (STATION category)
+        if (category === 'STATION') {
+            const lastNote = this.lastNotes[category];
+            if (!lastNote) {
+                this.lastNotes[category] = noteName;
+                return noteName;
+            }
+
+            // Extract numeric parts to calculate distance (e.g. "C2" -> 2)
+            // But Tone names are complex. Better to use ScaleTheory's degree logic.
+            // Simplified: If the jump is too large, move it closer to avoid chaotic jumps.
+            // For now, we'll just track it.
+            this.lastNotes[category] = noteName;
+        }
+
         return noteName;
     }
 }

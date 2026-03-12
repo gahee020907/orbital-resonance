@@ -64,8 +64,11 @@ class AudioEngine {
             // Start the Harmonic Walker
             this.aiConductor.startConducting();
             console.log('11. AIConductor Started');
-            // Start Transport (REMOVED for Physics Flow)
-            // Tone.Transport.start();
+
+            // Initialize Transport for Quantization
+            Tone.Transport.bpm.value = 120;
+            Tone.Transport.start();
+            console.log('✅ Transport Started at 120 BPM');
 
             this.setMasterVolume(this.masterVolume);
             this.setReverbDepth(this.reverbDepth);
@@ -178,8 +181,37 @@ class AudioEngine {
             noteToPlay = this.scaleTheory.constrainToChord(noteToPlay, conductorResult.allowedNotes);
         }
 
-        // 4. Humanized Timing
-        const humanize = Math.random() * 0.1; // 0-100ms delay
+        // 4. Rhythmic Quantization (GROOVE FIX)
+        let triggerTime = Tone.now() + 0.1; // Baseline small latency buffer
+
+        if (this.instruments.currentPreset === 'jazz' || this.instruments.currentPreset === 'band') {
+            // Snap to next 8th note
+            const next8n = Tone.Transport.nextSubdivision('8n');
+
+            // Drum Gating for BAND (Backbeat Logic)
+            if (this.instruments.currentPreset === 'band') {
+                const beat = Math.floor(Tone.Transport.seconds * (Tone.Transport.bpm.value / 60) * 1) % 4 + 1;
+
+                if (audioParams.category === 'STATION') { // KICK
+                    if (beat !== 1 && beat !== 3) return; // Only on 1 & 3
+                } else if (audioParams.category === 'DEBRIS') { // SNARE
+                    if (beat !== 2 && beat !== 4) return; // Only on 2 & 4
+                }
+            }
+
+            // Swing for JAZZ
+            let swingOffset = 0;
+            if (this.instruments.currentPreset === 'jazz') {
+                // If it's an "off" 8th note, delay it for swing feel
+                const isOffBeat = Math.floor(Tone.Transport.seconds / Tone.Time('8n').toSeconds()) % 2 === 1;
+                if (isOffBeat) swingOffset = Tone.Time('8n').toSeconds() * 0.33;
+            }
+
+            triggerTime = next8n + swingOffset;
+        } else {
+            // Humanized Timing for Ambient/Cosmic
+            triggerTime += Math.random() * 0.1;
+        }
 
         // Variable durations
         let duration = '8n';
@@ -187,11 +219,7 @@ class AudioEngine {
         if (satellite.category === 'DEBRIS') duration = '32n';
 
         // CRITICAL FIX: Convert dB to Gain (Velocity)
-        // audioParams.volume is in dB (e.g. -10). Instruments expects 0-1.
-        // Formula: gain = 10 ^ (db / 20)
         let velocity = Math.pow(10, audioParams.volume / 20);
-
-        // Clamp just in case
         if (velocity > 1) velocity = 1;
         if (velocity < 0) velocity = 0;
 
@@ -200,7 +228,7 @@ class AudioEngine {
             audioParams.category,
             noteToPlay,
             duration,
-            { volume: velocity, time: '+' + humanize }
+            { volume: velocity, time: triggerTime }
         );
 
         // Logging
